@@ -116,12 +116,12 @@ getClosest <- function(train, test, distFunc) {
   return(result)
 }
 
-dtwDists<- function(ts1, ts2, dist_fn) {
+dtwDists<- function(ts1, ts2, ...) {
   dist_matrix <- matrix(nrow = ncol(ts1), ncol = ncol(ts2))
   
   for (i in seq(ncol(ts1))) {
     for (j in seq(ncol(ts2))) {
-      dist_matrix[i, j] = dtw(ts1[, i], ts2[, j], distance.function = dist_fn, distance.only = TRUE)$distance
+      dist_matrix[i, j] = dtw(ts1[, i], ts2[, j], distance.only = TRUE, ...)$distance
     }
   }
   return(dist_matrix)
@@ -259,16 +259,16 @@ print("Starting DTW ...")
 
 ########## Retirar
 library(parallel)
-d1 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), l1Dist))
-d2 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), l2Dist))
+d1 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist))
+d2 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist))
 dtwL1 <- mccollect(d1)
 dtwL2 <- mccollect(d2)
 dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1[[1]]), trainSet$especies, k)
 dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2[[1]]), trainSet$especies, k)
-##########
+########## Retirar
 
-# dtwL1 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), l1Dist)
-# dtwL2 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), l2Dist)
+# dtwL1 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist)
+# dtwL2 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist)
 # dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1), trainSet$especies, k)
 # dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2), trainSet$especies, k)
 plotMeanPrecisionRecall(dtwMeanPRL1)
