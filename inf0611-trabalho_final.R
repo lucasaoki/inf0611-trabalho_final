@@ -259,13 +259,10 @@ dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1[[1]]), trainSet
 dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2[[1]]), trainSet$especies, k)
 ########## Retirar
 
-# dtwEuclidean <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]))
 # dtwL1 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist)
 # dtwL2 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist)
-# dtwMeanPREuclidean <- meanPrecisionRecall(cbind(testSet$especies, dtwEuclidean), trainSet$especies, k)
 # dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1), trainSet$especies, k)
 # dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2), trainSet$especies, k)
-# plotMeanPrecisionRecall(dtwMeanPREuclidean)
 plotMeanPrecisionRecall(dtwMeanPRL1)
 plotMeanPrecisionRecall(dtwMeanPRL2)
 
