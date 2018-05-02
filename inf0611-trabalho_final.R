@@ -41,13 +41,13 @@ closest_species <- function(db_species, dist_matrix) {
 
 # Calculo da Precisao
 precision <- function(retrieved, relevant) {
-  rate <- length(intersect(retrieved, relevant)) / length(retrieved)
+  rate <- length(retrieved[retrieved == unique(relevant)]) / length(retrieved)
   return (rate)
 }
 
 # Calculo da Revocacao
 recall <- function(retrieved, relevant) {
-  rate <- length(intersect(retrieved, relevant)) / length(relevant)
+  rate <- length(retrieved[retrieved == unique(relevant)]) / length(relevant)
   return(rate)
 }
 
@@ -67,8 +67,8 @@ mean_precision_recall <- function(retrieved_ids, query_ids, k) {
   prec <- matrix(nrow = length(k), ncol = length(query_ids))
   rec  <- matrix(nrow = length(k), ncol = length(query_ids))
   for (i in seq(length(query_ids))) {
-    prec[,i] <- check_relevant(retrieved_ids[i,], query_ids[i], precision, k)
-    rec[,i] <- check_relevant(retrieved_ids[i,], query_ids[i], recall, k)
+    prec[,i] <- check_relevant(retrieved_ids[i,], retrieved_ids[i, retrieved_ids[i,] == query_ids[i]], precision, k)
+    rec[,i] <- check_relevant(retrieved_ids[i,], retrieved_ids[i, retrieved_ids[i,] == query_ids[i]], recall, k)
   }  
   return(data.frame(elements=k, mean_precision=rowMeans(prec), mean_recall=rowMeans(rec)))
 }
