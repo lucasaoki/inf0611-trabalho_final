@@ -267,9 +267,20 @@ dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1[[1]]), trainSet
 dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2[[1]]), trainSet$especies, k)
 ########## Retirar
 
+# dtwEuclidean <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]))
 # dtwL1 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist)
 # dtwL2 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist)
+# dtwMeanPREuclidean <- meanPrecisionRecall(cbind(testSet$especies, dtwEuclidean), trainSet$especies, k)
 # dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1), trainSet$especies, k)
 # dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2), trainSet$especies, k)
+# plotMeanPrecisionRecall(dtwMeanPREuclidean)
 plotMeanPrecisionRecall(dtwMeanPRL1)
 plotMeanPrecisionRecall(dtwMeanPRL2)
+
+# Gráfico comparativo das revocações médias entre ambas estratégias e distâncias
+meanRecallDf <- data.frame(elements=dtwMeanPRL1$elements, st1_l1 = dtwMeanPRL1$mean_recall, st1_l2 = dtwMeanPRL2$mean_recall)
+plotMeansByK(meanRecallDf, "Comparação das Revocações Médias", c("Estratégia 2 - L1", "Estratégia 2 - L2"))
+
+# Gráfico comparativo das precisões médias entre ambas estratégias e distâncias
+meanPrecisionDf <- data.frame(elements=dtwMeanPRL1$elements, st1_l1 = dtwMeanPRL1$mean_precision, st1_l2 = dtwMeanPRL2$mean_precision)
+plotMeansByK(meanPrecisionDf, "Comparação das Precisões Médias", c("Estratégia 2 - L1", "Estratégia 2 - L2"))
