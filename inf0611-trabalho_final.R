@@ -243,14 +243,6 @@ st1MeanPrecRecL2 <- meanPrecisionRecall(st1ClosestL2, trainSet[,1], k)
 plotMeanPrecisionRecall(st1MeanPrecRecL1)
 plotMeanPrecisionRecall(st1MeanPrecRecL2)
 
-# Gráfico comparativo das revocações médias entre ambas estratégias e distâncias
-meanRecallDf <- data.frame(elements=st1MeanPrecRecL1$elements, st1_l1 = st1MeanPrecRecL1$mean_recall, st1_l2 = st1MeanPrecRecL2$mean_recall)
-plotMeansByK(meanRecallDf, "Comparação das Revocações Médias", c("Estratégia 1 - L1", "Estratégia 1 - L2"))
-
-# Gráfico comparativo das precisões médias entre ambas estratégias e distâncias
-meanPrecisionDf <- data.frame(elements=st1MeanPrecRecL1$elements, st1_l1 = st1MeanPrecRecL1$mean_precision, st1_l2 = st1MeanPrecRecL2$mean_precision)
-plotMeansByK(meanPrecisionDf, "Comparação das Precisões Médias", c("Estratégia 1 - L1", "Estratégia 1 - L2"))
-
 ## Estratégia 2 - DTW
 print("Starting DTW ...")
 # normaliza cada série, mas retorna cada série por coluna
@@ -278,9 +270,17 @@ plotMeanPrecisionRecall(dtwMeanPRL1)
 plotMeanPrecisionRecall(dtwMeanPRL2)
 
 # Gráfico comparativo das revocações médias entre ambas estratégias e distâncias
-meanRecallDf <- data.frame(elements=dtwMeanPRL1$elements, st1_l1 = dtwMeanPRL1$mean_recall, st1_l2 = dtwMeanPRL2$mean_recall)
-plotMeansByK(meanRecallDf, "Comparação das Revocações Médias", c("Estratégia 2 - L1", "Estratégia 2 - L2"))
+meanRecallDf <- data.frame(elements=st1MeanPrecRecL1$elements, 
+                           st1_l1 = st1MeanPrecRecL1$mean_recall, 
+                           st1_l2 = st1MeanPrecRecL2$mean_recall,
+                           st2_l1 = dtwMeanPRL1$mean_recall, 
+                           st2_l2 = dtwMeanPRL2$mean_recall)
+plotMeansByK(meanRecallDf, "Comparação das Revocações Médias", c("Estratégia 1 - L1", "Estratégia 1 - L2", "Estratégia 2 - L1", "Estratégia 2 - L2"))
 
 # Gráfico comparativo das precisões médias entre ambas estratégias e distâncias
-meanPrecisionDf <- data.frame(elements=dtwMeanPRL1$elements, st1_l1 = dtwMeanPRL1$mean_precision, st1_l2 = dtwMeanPRL2$mean_precision)
-plotMeansByK(meanPrecisionDf, "Comparação das Precisões Médias", c("Estratégia 2 - L1", "Estratégia 2 - L2"))
+meanPrecisionDf <- data.frame(elements=st1MeanPrecRecL1$elements, 
+                              st1_l1 = st1MeanPrecRecL1$mean_precision, 
+                              st1_l2 = st1MeanPrecRecL2$mean_precision,
+                              st2_l1 = dtwMeanPRL1$mean_precision, 
+                              st2_l2 = dtwMeanPRL2$mean_precision)
+plotMeansByK(meanPrecisionDf, "Comparação das Precisões Médias", c("Estratégia 1 - L1", "Estratégia 1 - L2", "Estratégia 2 - L1", "Estratégia 2 - L2"))
