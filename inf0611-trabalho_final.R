@@ -136,27 +136,9 @@ dtwClosestSp <- function(db_species, dist_matrix) {
   return(species_order)
 }
 
-# Função que calcula a precisão com base nas distancias calculadas
-# retornando o resultado ordenado pelas distâncias
-precisionForKFirst <- function(distances, ids, relevant_id, k) {
-  ord_ids <- ids[order(distances)][1:k]
-  #print(ord_ids)
-  max_occurrences <- min(k,sum(ids == relevant_id))
-  total <- 0
-  relevant <- 0
-  for (id in ord_ids) {
-    total <- total + 1
-    if (relevant_id == id) {
-      relevant <- relevant + 1
-    }
-    #if (relevant == max_occurrences) break
-  }
-  return(relevant/total)
-}
-
+# Função que calcula a precisão média (MAP) com base nas distancias calculadas
 averagePrecisionForKFirst <- function(distances, ids, relevant_id, k) {
   ord_ids <- ids[order(distances)][1:k]
-  #print(ord_ids)
   max_occurrences <- min(k, sum(ids == relevant_id))
   total <- 0
   relevant <- 0
@@ -167,16 +149,13 @@ averagePrecisionForKFirst <- function(distances, ids, relevant_id, k) {
       relevant <- relevant + 1
       meanSum <- meanSum + relevant/total
     }
-    #if (relevant == max_occurrences) break
   }
   return(meanSum/total)
 }
 
 # Função que calcula a revocação com base nas distancias calculadas
-# retornando o resultado ordenado pelas distâncias
 recallForKFirst <- function(distances, ids, relevant_id, k) {
   ord_ids <- ids[order(distances)][1:k]
-  #total <- min(k, sum(ids == relevant_id))
   total <- sum(ids == relevant_id)
   relevant <- 0
   for (i in c(1:length(ord_ids))) {
@@ -195,11 +174,9 @@ meanPrecisionRecall <- function(distances, ids, k) {
     p <- c()
     r <- c()
     for (row in c(1:nrow(distances))) {
-      #p <- c(p, precisionForKFirst(distances[row,][2:ncol(distances)], ids, distances[row,][1], i))
       p <- c(p, averagePrecisionForKFirst(distances[row,][2:ncol(distances)], ids, distances[row,][1], i))
       r <- c(r, recallForKFirst(distances[row,][2:ncol(distances)], ids, distances[row,][1], i))
     }
-    #print(p)
     precision <- c(precision, mean(p))
     recall <- c(recall, mean(r))
   }
@@ -227,7 +204,7 @@ plotMeansByK <- function(dataFrame, title, keys) {
   return(g)
 }
 
-# Read CSV db files
+# Leitura dos arquivos CSV
 trainSet <- readDB("SwedishLeaf_TRAIN.csv")
 testSet <- readDB("SwedishLeaf_TEST.csv")
 k <- seq(5, 100, 5)
@@ -281,3 +258,30 @@ meanPrecisionDf <- data.frame(elements=st1MeanPrecRecL1$elements,
                               st2_l1 = dtwMeanPRL1$mean_precision, 
                               st2_l2 = dtwMeanPRL2$mean_precision)
 plotMeansByK(meanPrecisionDf, "Comparação das Precisões Médias", c("Estratégia 1 - L1", "Estratégia 1 - L2", "Estratégia 2 - L1", "Estratégia 2 - L2"))
+
+# Imagens do recurrence plot para dois vetores de característica distintos
+v1 <- unname(unlist(trainSet[1,]))
+v2 <- unname(unlist(trainSet[2,]))
+par(mar = rep(0, 4))
+image(recurrencePlot(v1[2:length(v)], 0.2), axes = FALSE, col = grey(c(0,1)))
+image(recurrencePlot(v2[2:length(v)], 0.2), axes = FALSE, col = grey(c(0,1)))
+
+# Tabela de valores para estratégia 1
+st1Table <- data.frame(elements = st1MeanPrecRecL1$elements, L1_precision = st1MeanPrecRecL1$mean_precision, L1_recall = st1MeanPrecRecL1$mean_recall,
+                       L2_precision = st1MeanPrecRecL2$mean_precision, L2_recall = st1MeanPrecRecL2$mean_recall)
+write.csv(st1Table, file="tablest1.csv")
+
+# Tabela de valores para estratégia 2
+st2Table <- data.frame(elements = dtwMeanPRL1$elements, L1_precision= dtwMeanPRL1$mean_precision, L1_recall= dtwMeanPRL1$mean_recall,
+                       L2_precision= dtwMeanPRL2$mean_precision, L2_recall= dtwMeanPRL2$mean_recall)
+write.csv(st2Table, file="tablest2.csv")
+
+# Tabela comparativa para revocacao
+recallTable <- data.frame(elements = dtwMeanPRL1$elements, st1L1_recall= st1MeanPrecRecL1$mean_recall, st1L2_recall= st1MeanPrecRecL2$mean_recall,
+                          st2L1_recall = dtwMeanPRL1$mean_recall, st2L2_recall= dtwMeanPRL2$mean_recall)
+write.csv(recallTable, file="recall.csv")
+
+# Tabela comparativa para precisao
+precisionTable <- data.frame(elements = dtwMeanPRL1$elements, st1L1_precision= st1MeanPrecRecL1$mean_precision, st1L2_precision= st1MeanPrecRecL2$mean_precision,
+                          st2L1_precision = dtwMeanPRL1$mean_precision, st2L2_precision= dtwMeanPRL2$mean_precision)
+write.csv(recallTable, file="precision.csv")
