@@ -221,27 +221,27 @@ plotMeanPrecisionRecall(st1MeanPrecRecL1)
 plotMeanPrecisionRecall(st1MeanPrecRecL2)
 
 ## Estratégia 2 - DTW
-print("Starting DTW ...")
+
 # normaliza cada série, mas retorna cada série por coluna
-# db_norm <- apply(trainSet[-1], 1, normalize)
-# query_norm <- apply(testSet[-1], 1, normalize)
+db_norm <- apply(trainSet[-1], 1, normalize)
+query_norm <- apply(testSet[-1], 1, normalize)
 
-########## Retirar
-library(parallel)
-d1 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist))
-d2 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist))
-dtwL1 <- mccollect(d1)
-dtwL2 <- mccollect(d2)
-dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1[[1]]), trainSet$especies, k)
-dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2[[1]]), trainSet$especies, k)
-########## Retirar
-
-# dtwL1 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist)
-# dtwL2 <- dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist)
-# dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1), trainSet$especies, k)
-# dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2), trainSet$especies, k)
+dtwL1 <- dtwDists(query_norm, db_norm, distance.function = l1Dist)
+dtwL2 <- dtwDists(query_norm, db_norm, distance.function = l2Dist)
+dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1), trainSet$especies, k)
+dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2), trainSet$especies, k)
 plotMeanPrecisionRecall(dtwMeanPRL1)
 plotMeanPrecisionRecall(dtwMeanPRL2)
+
+# ########## Execução em paralelo
+# library(parallel)
+# d1 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l1Dist))
+# d2 <- mcparallel(dtwDists(t(testSet[,-1]), t(trainSet[,-1]), distance.function = l2Dist))
+# dtwL1 <- mccollect(d1)
+# dtwL2 <- mccollect(d2)
+# dtwMeanPRL1 <- meanPrecisionRecall(cbind(testSet$especies, dtwL1[[1]]), trainSet$especies, k)
+# dtwMeanPRL2 <- meanPrecisionRecall(cbind(testSet$especies, dtwL2[[1]]), trainSet$especies, k)
+# ########## Execução em paralelo
 
 # Gráfico comparativo das revocações médias entre ambas estratégias e distâncias
 meanRecallDf <- data.frame(elements=st1MeanPrecRecL1$elements, 
